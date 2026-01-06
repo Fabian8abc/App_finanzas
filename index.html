@@ -88,8 +88,8 @@
         .tab.active-inc { background: #d1fae5; color: var(--green); border-color: var(--green); }
 
         /* FILTROS DE TIEMPO */
-        .filters { display: flex; background: var(--card); padding: 4px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
-        .filter-btn { flex: 1; text-align: center; padding: 10px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--gray); }
+        .filters { display: flex; background: var(--card); padding: 4px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+        .filter-btn { flex: 1; text-align: center; padding: 10px; font-size: 11px; font-weight: 700; border-radius: 8px; color: var(--gray); white-space: nowrap; min-width: 50px; }
         .filter-btn.active { background: var(--primary); color: white; }
 
         /* NAVEGACIÓN */
@@ -181,6 +181,7 @@
                 <div id="f-week" class="filter-btn" onclick="window.setFilter('week')">SEMANA</div>
                 <div id="f-month" class="filter-btn active" onclick="window.setFilter('month')">MES</div>
                 <div id="f-year" class="filter-btn" onclick="window.setFilter('year')">AÑO</div>
+                <div id="f-all" class="filter-btn" onclick="window.setFilter('all')">TODO</div>
             </div>
 
             <div class="card" style="text-align:center;">
@@ -429,15 +430,17 @@
         for(var i=0; i<btns.length; i++) btns[i].classList.remove('active');
         document.getElementById('f-'+f).classList.add('active');
         
-        var labels = {'day':'HOY', 'week':'ESTA SEMANA', 'month':'ESTE MES', 'year':'ESTE AÑO'};
+        var labels = {'day':'HOY', 'week':'ESTA SEMANA', 'month':'ESTE MES', 'year':'ESTE AÑO', 'all': 'HISTÓRICO COMPLETO'};
         document.getElementById('lbl-period').innerText = labels[f];
         
         window.renderStats();
     };
 
     function checkDate(dStr) {
+        // Si el filtro es "all", mostramos todo sin revisar fechas
+        if(filtro === 'all') return true;
+
         var dParts = dStr.split('-');
-        // Crear fecha localmente correcta
         var d = new Date(dParts[0], dParts[1]-1, dParts[2]);
         var hoy = new Date();
         
@@ -451,8 +454,7 @@
             return d.getFullYear() === hoy.getFullYear();
         }
         if(filtro === 'week') {
-            // Calcular inicio y fin de semana (Domingo a Sábado)
-            var currentDay = hoy.getDay(); // 0 (Dom) - 6 (Sab)
+            var currentDay = hoy.getDay(); 
             var diff = hoy.getDate() - currentDay; 
             var startOfWeek = new Date(hoy);
             startOfWeek.setDate(diff);
